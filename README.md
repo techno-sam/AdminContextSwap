@@ -1,0 +1,1 @@
+Mod based on https://github.com/Arnaria/CorviolisUtils/blob/master/src/main/java/corviolis/corviolisutils/commands/AdminModeCommand.java

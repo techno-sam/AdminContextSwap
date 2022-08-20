@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "admin_context_swap",
+  "version": "${version}",
+  "name": "AdminContextSwap",
+  "description": "",
+  "authors": [
+    "Slimeist"
+  ],
+  "contact": {
+    "repo": "https://github.com/techno-sam/AdminContextSwap"
+  },
+  "license": "MIT",
+  "icon": "assets/admin_context_swap/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "com.slimeist.admin_context_swap.AdminContextSwap"
+    ]
+  },
+  "mixins": [
+    "admin_context_swap.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.9",
+    "fabric": "*",
+    "minecraft": "~1.19",
+    "fabric-permissions-api-v0": "*",
+    "luckperms": "*"
+  },
+  "recommends": {}
+}
