@@ -1,6 +1,7 @@
 package com.slimeist.admin_context_swap.mixin;
 
 import com.mojang.authlib.GameProfile;
+import com.slimeist.admin_context_swap.AdminContextSwap;
 import com.slimeist.admin_context_swap.interfaces.PlayerEntityInf;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -49,17 +50,28 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Pl
     public void performSwap() {
         PlayerInventory inventory = getInventory();
         NbtList current = inventory.writeNbt(new NbtList());
-        inventory.readNbt(backupInventory);
-        backupInventory = current;
+        NbtList current_if_crash = inventory.writeNbt(new NbtList());
 
-        GameMode currentGameMode = this.interactionManager.getGameMode();
-        this.changeGameMode(backupGameMode);
-        backupGameMode = currentGameMode;
+        try {
+            inventory.readNbt(backupInventory);
+            backupInventory = current;
+
+            GameMode currentGameMode = this.interactionManager.getGameMode();
+            this.changeGameMode(backupGameMode);
+            backupGameMode = currentGameMode;
+        } catch (Exception e) {
+            e.printStackTrace();
+            inventory.readNbt(current_if_crash);
+        }
     }
 
     @Inject(method = "readCustomDataFromNbt", at = @At("HEAD"))
     public void read(NbtCompound nbt, CallbackInfo ci) {
         backupInventory = (NbtList) nbt.get("backupInventory");
+        if (backupInventory == null) {
+            backupInventory = new NbtList();
+            AdminContextSwap.LOGGER.error("Null backupInventory for player "+this.getName().getString());
+        }
         adminMode = nbt.getBoolean("adminMode");
         backupGameMode = GameMode.byId(nbt.getInt("backupGameMode"), GameMode.DEFAULT);
     }

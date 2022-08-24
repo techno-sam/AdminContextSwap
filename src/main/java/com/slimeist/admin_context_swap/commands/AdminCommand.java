@@ -16,7 +16,41 @@ public class AdminCommand {
                 .literal("adminMode")
                 .requires(Permissions.require("admin_context_swap.swap", 4))
                 .executes(AdminCommand::swap)
+                .then(
+                        CommandManager.literal("keep-inv")
+                                .executes(AdminCommand::swapKeepInv)
+                )
+                .then(
+                        CommandManager.literal("get")
+                                .executes(AdminCommand::get)
+                )
         );
+    }
+
+    private static int get(CommandContext<ServerCommandSource> context) {
+        ServerPlayerEntity executor = context.getSource().getPlayer();
+
+        if (((PlayerEntityInf) executor).isAdminMode()) {
+            executor.sendMessage(Text.literal("Admin mode is enabled"), false);
+            return 1;
+        } else {
+            executor.sendMessage(Text.literal("Admin mode is disabled"), false);
+            return 0;
+        }
+    }
+
+    private static int swapKeepInv(CommandContext<ServerCommandSource> context) {
+        ServerPlayerEntity executor = context.getSource().getPlayer();
+
+        if (((PlayerEntityInf) executor).isAdminMode()) {
+            ((PlayerEntityInf) executor).setAdminMode(false);
+            executor.sendMessage(Text.literal("Admin mode disabled (keep inv)"), false);
+        } else {
+            ((PlayerEntityInf) executor).setAdminMode(true);
+            executor.sendMessage(Text.literal("Admin mode enabled (keep inv)"), false);
+        }
+        LuckPermsProvider.get().getContextManager().signalContextUpdate(executor);
+        return 1;
     }
 
     private static int swap(CommandContext<ServerCommandSource> context) {
